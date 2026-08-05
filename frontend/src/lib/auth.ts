@@ -4,6 +4,7 @@ import { PrismaClient } from "../generated/prisma";
 import { nextCookies } from "better-auth/next-js";
 
 const prisma = new PrismaClient();
+
 const disableSignUp = ["1", "true", "yes"].includes(
   (process.env.DISABLE_SIGN_UP ?? "").toLowerCase()
 );
@@ -25,9 +26,6 @@ const trustedOrigins = Array.from(
     [
       toOrigin(process.env.NEXT_PUBLIC_APP_URL),
       toOrigin(process.env.BETTER_AUTH_URL),
-      "http://localhost:3107",
-      "http://sp.localhost:3107",
-      "http://supoclip.localhost:3107",
     ].filter((origin): origin is string => Boolean(origin))
   )
 );
@@ -36,6 +34,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+
   user: {
     deleteUser: {
       enabled: true,
@@ -47,13 +46,16 @@ export const auth = betterAuth({
       },
     },
   },
+
   trustedOrigins,
+
   emailAndPassword: {
     enabled: true,
     disableSignUp,
   },
+
   plugins: [
-    nextCookies(), // Enable Next.js cookie handling
+    nextCookies(),
   ],
 });
 
